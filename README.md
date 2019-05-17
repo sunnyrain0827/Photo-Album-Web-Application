@@ -74,7 +74,7 @@ var apigClient = apigClientFactory.newClient({
 });
 ```
 
-#Details:
+# Details:
 1.	Launch an ElasticSearch instance 
 a.	Using AWS ElasticSearch service , create a new domain called “photos”.
 b.	Make note of the Security Group (SG1) you attach to the domain.
