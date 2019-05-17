@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <script type="text/javascript" src="./lib/axios/dist/axios.standalone.js"></script>
+    <script type="text/javascript" src="./lib/CryptoJS/rollups/hmac-sha256.js"></script>
+    <script type="text/javascript" src="./lib/CryptoJS/rollups/sha256.js"></script>
+    <script type="text/javascript" src="./lib/CryptoJS/components/hmac.js"></script>
+    <script type="text/javascript" src="./lib/CryptoJS/components/enc-base64.js"></script>
+    <script type="text/javascript" src="./lib/url-template/url-template.js"></script>
+    <script type="text/javascript" src="./lib/apiGatewayCore/sigV4Client.js"></script>
+    <script type="text/javascript" src="./lib/apiGatewayCore/apiGatewayClient.js"></script>
+    <script type="text/javascript" src="./lib/apiGatewayCore/simpleHttpClient.js"></script>
+    <script type="text/javascript" src="./lib/apiGatewayCore/utils.js"></script>
+    <script type="text/javascript" src="./apigClient.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <title>Document</title>
+</head>
+
+<body>
+    <div>
+        Search:<input type = "text" id = "querySentence"></input>
+        <button id ='search'>Search</button>
+    </div>
+    <div id ="display"></div>
+    <div>
+        Upload:<input type = "file" id = "UpdateSentence"></input>
+        <button id = 'upload'>Submit</button>
+    </div>
+    <div id="result"/>    
+    <script src="./apigClient.js"></script>
+    <script>
+    
+    apigClient = apigClientFactory.newClient();
+    $(document).ready(function(){
+    $("#search").click(function(){
+    
+    var params = {
+      // This is where any modeled request parameters should be added.
+      // The key is the parameter name, as it is defined in the API in API Gateway.
+      "q": document.getElementById("querySentence").value,
+    };
+    
+    var body = {
+      // This is where you define the body of the request,
+      "q": document.getElementById("querySentence").value,
+    };
+    
+    apigClient.searchGet(params, body)
+    .then(function(result){
+        console.log(result)
+        for(var i=0;i<result['data']['body']['results'].length;i++){
+            d = document.getElementById('result'),
+	        e = document.createElement('img');
+            e.src = result['data']['body']['results'][i]['url']
+            console.log(e.src)
+	        d.appendChild(e);
+        }
+
+        //$("#result").attr('src',result['data']['body'].slice(3, -2)); 
+    }).catch( function(result){
+      // Add error callback code here.
+      alert(result);
+    });
+    });
+});
+apigClient = apigClientFactory.newClient();
+$(document).ready(function(){
+  $("#upload").click(function(){
+    var params = {
+      // This is where any modeled request parameters should be added.
+      // The key is the parameter name, as it is defined in the API in API Gateway.
+      'headers': {'Content-Type':  "image/jpg"},
+      'Content-Type': "image/png",
+      'upload' : $("#UpdateSentence").prop('files')[0].name,
+      'x-api-key' : 'eQrMgHdf9W5u0sS4g2qF8ayjJgfW00Pia6ikNA9t'
+    };
+    var file  = $("#UpdateSentence").prop('files')[0]
+    console.log(file)
+    var body  = ""
+    var reader = new FileReader();
+    if(file){
+
+        var xhr = new XMLHttpRequest();
+            xhr.open("PUT", ` https://zy3h7wbn21.execute-api.us-east-1.amazonaws.com/test/upload?upload=${file.name}`);
+            xhr.setRequestHeader("Content-Type", file.type);
+            console.log("upload succeed!")
+            xhr.setRequestHeader("x-api-key", "eQrMgHdf9W5u0sS4g2qF8ayjJgfW00Pia6ikNA9t");
+            xhr.send(file);
+    }              
+    });
+});  
+    </script>
+
+</body>
+
+</html>
